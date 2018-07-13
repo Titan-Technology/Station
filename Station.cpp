@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 	if(argv[1] == '\0')
 		{
 			cout << "wrong" << endl;
+			return 0;
 		}
 	if(string(argv[1]) == "build")
 		{
