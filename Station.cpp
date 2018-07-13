@@ -49,7 +49,7 @@ bool clang = false;
 
 int main(int argc, char* argv[])
 {
-	if(string(argv[1]) == '\0')
+	if(argv[1] == '\0')
 		{
 			cout << "wrong" << endl;
 		}
