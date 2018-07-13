@@ -1,0 +1,8 @@
+NAME=""
+FALGS="-"
+LDIR=""
+IDIR=""
+INPUTS=""
+MAINFILE=""
+PREFIX=""
+LIBS=""
