@@ -12,6 +12,8 @@ using namespace std;
 void searchFile(); 
 void build_func();
 void get_info();
+void gen();
+
 
 string GetStdoutFromCommand(string cmd)
 {
@@ -29,10 +31,13 @@ string GetStdoutFromCommand(string cmd)
 		}
 	return data;
 }
-
-int pos4d= 0 ;
-int pos5=0;
-int pos2=0;
+int pos3=0;
+int pos4d = 0;
+int pos5 = 0;
+int pos2 = 0;
+int pos6 = 0;
+int pos7 =0;
+int pos8 = 0;
 int pos;
 string bopt[] = {"BOUTPUTNAME=\"","BINPUTS=\""};
 string flags[] = {"CPPFLAGS=\"","CFLAGS=\"","CCOM=\"","CPPCOM=\"","INSTALLPREFIX=\"","LINKING=\"","INCLUDES=\"","LIBDIR=\""};
@@ -54,6 +59,21 @@ int main(int argc, char* argv[])
 			cout << "wrong" << endl;
 			return 0;
 		}
+	if(string(argv[1]) == "k")
+		{
+			string compp1 = GetStdoutFromCommand("g++ -c cmake.cpp -o testh.o -fpermissive");
+			string compp8 = GetStdoutFromCommand("g++ -c test.c -o test.o -Wfatal-errors");
+			ifstream i1("testh.o");
+			ifstream i2("testh.o");
+			if(!i1.is_open())
+				{
+					cout << compp1 << endl;
+				}
+			if(!i2.is_open())
+				{
+					cout << compp8 << endl;
+				}
+			}	
 	if(string(argv[1]) == "build")
 		{
 			cout << "Researching" << endl;
@@ -63,115 +83,7 @@ int main(int argc, char* argv[])
 		}
 	if(string(argv[1]) == "generate")
 		{
-			int pos3;
-			cout << "Preparing" << endl;
-			ifstream dataIn;
-			dataIn.open("ResearchPaper.txt");
-			string dd;
-			string f;
-			string g;
-			if(pos == sizeof(flags)/sizeof(flags[0]))
-				{
-					return 0;
-				}
-			g = paper[pos3];
-			if (dataIn.is_open())
-				{
-					while (getline(dataIn, dd))
-						{
-							f.append(dd);
-							if (f.find(g) != string::npos)
-								{
-									if(g == "NAME=\"")
-										{
-											dd.erase(0,10);
-										}
-									else if(g == "FLAGS=\"")
-										{
-											dd.erase(0,8);
-										}
-									else if(g == "LDIR=\"")
-										{
-											dd.erase(0,6);
-										}
-									else if(g == "IDIR=\"")
-										{
-											dd.erase(0,8);
-										}
-									else if(g == "INPUTS=\"")
-										{
-											dd.erase(0,15);
-										}
-									else if(g == "MANFILE=\"")
-										{
-											dd.erase(0,9);
-										}
-									else if(g == "PREFIX=\"")
-										{
-											dd.erase(0,10);
-										}
-									else if(g == "LIBS=\"")
-										{
-											dd.erase(0,8);
-										}
-									reverse(dd.begin(),dd.end());
-									dd.erase (0,1);
-									reverse(dd.begin(),dd.end());
-									pos3++;
-									break;
-								}		
-						}
-					dataIn.close();
-				}
-			gen_var[pos3] = dd;
-			cout << "===============================================" << endl;
-			cout << gen_var[pos3] << endl;
-			cout << "===============================================" << endl;
-			cout << endl;
-			#ifdef WIN32
-				system("echo #include^<stdio.h^>◙int main(int argc, char **argv) { printf(\"hello world\n\"); } >> test.c");
-			#else
-				system("echo -e \"#include<stdio.h>\nint main(int argc, char **argv) { printf(\"hello world\"); }\" >> test.c");
-			#endif
-			string compp1 = GetStdoutFromCommand("g++ -o test test.c");
-			#ifdef WIN32
-				string compp2 = GetStdoutFromCommand("clang++ -o test.exe test.c");
-			#else
-				string compp2 = GetStdoutFromCommand("clang++ -o test test.c");
-			#endif
-		
-			if(compp1 == "\0")
-				{
-					gcc = true;
-				}
-			if(compp2 == "\0")
-				{
-					clang = true;
-				}
-			if(clang == true && gcc == true)
-				{
-					string compilercon;
-					cout << "I Have found two Compilers on your system,Which one shall I us:" << endl;
-					cout << "1)GCC" << endl;
-					cout << "2)Clang" << endl;
-					cout << "Please Enter only the number" << endl;
-					getline(cin,compilercon);
-					if(compilercon == "1")
-						{
-							gen_var[pos3] = "gcc";
-							pos3++;
-							gen_var[pos3] = "g++";
-						}
-					if(compilercon == "2")
-						{
-							gen_var[pos3] = "clang";
-							pos3++;
-							gen_var[pos3] = "clang++";
-						}
-				}	
-			cout << "Research Paper Read(FallPath Generated)" << endl;
-			cout << "To Fall type:" << endl;
-			cout << "station build" << endl;
+			gen();
 		}
 	if(string(argv[1]) == "install")
 		{
@@ -204,7 +116,7 @@ void get_info()
 	string word;
 	if(pos4d == sizeof(bopt)/sizeof(bopt[0]))
 		{
-			return 0;
+			return;
 		}
 	word = bopt[pos4d];
 	if (dataIn.is_open())
@@ -286,6 +198,189 @@ void build_func()
 		{
 			cout << "Fall Complete!" << endl;
 		}
+}
+
+void gen()
+{
+	cout << "Preparing" << endl;
+	ifstream dataIn;
+	dataIn.open("ResearchPaper.txt");
+	string dd;
+	string f;
+	string g;
+	if(pos == sizeof(flags)/sizeof(flags[0]))
+		{
+			return;
+		}
+	g = paper[pos3];
+	if (dataIn.is_open())
+		{
+			while (getline(dataIn, dd))
+				{
+					f.append(dd);
+					if (f.find(g) != string::npos)
+						{
+							if(g == "NAME=\"")
+								{
+									dd.erase(0,10);
+								}
+							else if(g == "FLAGS=\"")
+								{
+									dd.erase(0,8);
+								}
+							else if(g == "LDIR=\"")
+								{
+									dd.erase(0,6);
+								}
+							else if(g == "IDIR=\"")
+								{
+									dd.erase(0,8);
+								}
+							else if(g == "INPUTS=\"")
+								{
+									dd.erase(0,15);
+								}
+							else if(g == "PREFIX=\"")
+								{
+									dd.erase(0,10);
+								}
+							else if(g == "LIBS=\"")
+								{
+									dd.erase(0,8);
+								}
+							reverse(dd.begin(),dd.end());
+							dd.erase (0,1);
+							reverse(dd.begin(),dd.end());
+							pos3++;
+							break;
+						}		
+				}
+			dataIn.close();
+		}	
+			/*if(g == "INPUTS=\"")
+			{
+				string fil;
+				string infile = dd;
+				int TempNumOne = infile.size();
+				char Filename[1000];
+				for (int a = 0;a<=TempNumOne;a++)
+					{
+						Filename[a] = infile[a];
+						fil += Filename[a];
+						if(Filename[a] == ' ')
+							{
+				                  fil = "";
+				            }
+						if(Filename[a] == ';')
+				            {
+								reverse(fil.begin(),fil.end());
+								fil.erase (0,1);
+								reverse(fil.begin(),fil.end());
+								inputs[pos5] = fil;
+								pos8++;
+				                fil = "";
+				            }
+					}
+			}
+			else if(g == "LDIR=\"")
+				{
+					string fil;
+					string infile = dd;
+					int TempNumOne = infile.size();
+					char Filename[1000];
+					for (int a = 0;a<=TempNumOne;a++)
+						{
+							Filename[a] = infile[a];
+							fil += Filename[a];
+							if(Filename[a] == ' ')
+								{
+					                  fil = "";
+					            }
+							if(Filename[a] == ';')
+					            {
+									reverse(fil.begin(),fil.end());
+									fil.erase (0,1);
+									reverse(fil.begin(),fil.end());
+									inputs[pos5] = fil;
+									pos7++;
+					                fil = "";
+					            }
+						}
+				}
+			else if(g == "IDIR=\"")
+				{
+					string fil;
+					string infile = dd;
+					int TempNumOne = infile.size();
+					char Filename[1000];
+					for (int a = 0;a<=TempNumOne;a++)
+						{
+							Filename[a] = infile[a];
+							fil += Filename[a];
+							if(Filename[a] == ' ')
+								{
+					                  fil = "";
+					            }
+							if(Filename[a] == ';')
+					            {
+									reverse(fil.begin(),fil.end());
+									fil.erase (0,1);
+									reverse(fil.begin(),fil.end());
+									includes[pos6] = fil;
+									pos6++;
+					                fil = "";
+					            }
+						}
+				}*/
+			gen_var[pos3] = dd;
+			cout << "===============================================" << endl;
+			cout << gen_var[pos3] << endl;
+			cout << "===============================================" << endl;
+			cout << endl;
+			#ifdef WIN32
+				system("echo #include^<stdio.h^> >> test.c");
+				system("echo int main(int argc, char **argv) { printf(\"hello world\"); } >> test.c");
+			#else
+				system("echo -e \"#include<stdio.h>\nint main(int argc, char **argv) { printf(\"hello world\"); }\" >> test.c");
+			#endif
+			string compp1 = GetStdoutFromCommand("g++ -o test test.c");
+			#ifdef WIN32
+				string compp2 = GetStdoutFromCommand("clang++ -o test.exe test.c");
+			#else
+				string compp2 = GetStdoutFromCommand("clang++ -o test test.c");
+			#endif
+			if(compp1 == "\0")
+				{
+					gcc = true;
+				}
+			if(compp2 == "\0")
+				{
+					clang = true;
+				}
+			if(clang == true && gcc == true)
+				{
+					string compilercon;
+					cout << "I Have found two Compilers on your system,Which one shall I us:" << endl;
+					cout << "1)GCC" << endl;
+					cout << "2)Clang" << endl;
+					cout << "Please Enter only the number" << endl;
+					getline(cin,compilercon);
+					if(compilercon == "1")
+						{
+							gen_var[pos3] = "gcc";
+							pos3++;
+							gen_var[pos3] = "g++";
+						}
+					if(compilercon == "2")
+						{
+							gen_var[pos3] = "clang";
+							pos3++;
+							gen_var[pos3] = "clang++";
+						}
+				}	
+			cout << "Research Paper Read(FallPath Generated)" << endl;
+			cout << "To Fall type:" << endl;
+			cout << "station build" << endl;
 }
 
 void searchFile()
