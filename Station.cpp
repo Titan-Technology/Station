@@ -189,7 +189,7 @@ void build_func()
 			pos2++;
 		}
 	system((options[4] + " " + " -L" + options[7] + " -o " + "build/dist/" + output + " build/*.cpp.o" + " " + options[6]).c_str());
-	ifstream fin(output);
+	ifstream fin("build/dist/" + output);
 	if(!fin)
 		{
 			cerr << "Path is Blocked" << endl;
