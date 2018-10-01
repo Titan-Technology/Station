@@ -40,7 +40,7 @@ int pos7 =0;
 int pos8 = 0;
 int pos;
 string bopt[] = {"BOUTPUTNAME=\"","BINPUTS=\""};
-string flags[] = {"CPPFLAGS=\"","CFLAGS=\"","CCOM=\"","CPPCOM=\"","INSTALLPREFIX=\"","LINKING=\"","INCLUDES=\"","LIBDIR=\""};
+string flags[] = {"CPPFLAGS=\"","CFLAGS=\"","CCOM=\"","CPPCOM=\"","INSTALLPREFIX=\"","LINKING=\"","INCLUDES=\"","LIBDIR=\"","RES=\""};
 string options[9000];
 string includes[9000];
 string libs[9000];
@@ -51,6 +51,7 @@ string gen_var[9000];
 
 bool gcc = false;
 bool clang = false;
+bool res;
 
 int main(int argc, char* argv[])
 {
@@ -124,7 +125,7 @@ void get_info()
 			while (getline(dataIn, temp))
 				{
 					line.append(temp);
-					if (line.find(word) != string::npos)
+					if(line.find(word) != string::npos)
 						{
 							if(word == "BOUTPUTNAME=\"")
 								{
@@ -179,16 +180,54 @@ void build_func()
 {
 	system("mkdir build");
 	system("mkdir \"build/dist\"");
+	string comma = "\"";
 	//Getting info
 	get_info();
-	cout << sizeof(inputs)/sizeof(inputs[0]) << endl;
 	//Compileing
 	while(pos2 < (sizeof(inputs)/sizeof(inputs[0])))
 		{
-			system((options[4] + " " + options[1] + " -I" + options[7] + " " + "-c " + inputs[pos2] + " -o " + "build/" + inputs[pos2] + ".o").c_str());
+			string check = GetStdoutFromCommand((options[4] + " " + options[1] + " -I" + options[7] + " " + "-c " + inputs[pos2] + " -o " + inputs[pos2] + ".o").c_str());
+			if(check == "g++: fatal error: no input files\ncompilation terminated.\n")
+				{
+					break;
+				}
+			cout << options[4] + " " + options[1] + " -I" + options[7] + " " + "-c " + inputs[pos2] + " -o " + inputs[pos2] + ".o" << endl;
+			system((options[4] + " " + options[1] + " -I" + options[7] + " " + "-c " + inputs[pos2] + " -o " + inputs[pos2] + ".o").c_str());
+			#ifdef WIN32
+				system(("copy " + comma + inputs[pos2] + ".o" + comma + " build").c_str());
+			#else
+				system(("cp " + inputs[pos2] + ".o" + " build/").c_str());
+			#endif
 			pos2++;
 		}
-	system((options[4] + " " + " -L" + options[7] + " -o " + "build/dist/" + output + " build/*.cpp.o" + " " + options[6]).c_str());
+	if(res == true)
+		{
+			cout << "windres icon.rc icon.o" << endl; 
+			system("windres icon.rc icon.o");
+			if(options[8].size() == 0)
+				{
+					cout << options[4] + " " + "-o " + "build/dist/" + output + " build/*.cpp.o icon.o" + " " + options[6] << endl;
+					system((options[4] + " " + "-o " + "build/dist/" + output + " build/*.cpp.o icon.o" + " " + options[6]).c_str());	
+				}
+			else	
+				{
+					cout << options[4] + " " + "-L" + options[8] + " -o " + "build/dist/" + output + " build/*.cpp.o icon.o" + " " + options[6] << endl;
+					system((options[4] + " " + "-L" + options[8] + " -o " + "build/dist/" + output + " build/*.cpp.o icon.o" + " " + options[6]).c_str());
+				}
+		}
+	else
+		{
+			if(options[8].size() == 0)
+				{
+					cout << options[4] + " " + "-o " + "build/dist/" + output + " build/*.cpp.o" + " " + options[6] << endl;
+					system((options[4] + " " + "-o " + "build/dist/" + output + " build/*.cpp.o" + " " + options[6]).c_str());	
+				}
+			else
+				{
+					cout << options[4] + " " + "-L" + options[8] + " -o " + "build/dist/" + output + " build/*.cpp.o" + " " + options[6] << endl;
+					system((options[4] + " " + "-L" + options[8] + " -o " + "build/dist/" + output + " build/*.cpp.o" + " " + options[6]).c_str());
+				}
+		}
 	ifstream fin("build/dist/" + output);
 	if(!fin)
 		{
@@ -387,12 +426,16 @@ void searchFile()
 {
 	ifstream dataIn;
 	dataIn.open("FallPath");
+	if (!dataIn.is_open())
+		{
+			return;
+		}
 	string temp;
 	string line;
 	string word;
 	if(pos == sizeof(flags)/sizeof(flags[0]))
 		{
-			return 0;
+			return;
 		}
 	word = flags[pos];
 	if (dataIn.is_open())
@@ -434,6 +477,21 @@ void searchFile()
 								{
 									temp.erase(0,8);
 								}
+							else if(word == "RES=\"")
+								{
+									temp.erase(0,5);
+									reverse(temp.begin(),temp.end());
+									temp.erase (0,1);
+									reverse(temp.begin(),temp.end());
+									if(temp == "YES")
+										{
+											res = true;
+										}
+									else
+										{
+											res = false;
+										}
+								}
 							reverse(temp.begin(),temp.end());
 							temp.erase (0,1);
 							reverse(temp.begin(),temp.end());
@@ -444,5 +502,5 @@ void searchFile()
 			dataIn.close();
 		}
 	options[pos] = temp;
-	searchFile();
+	searchFile();	
 }
