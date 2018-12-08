@@ -1,0 +1,3 @@
+language: cpp
+compiler: gcc
+script: g++ -Wall -Wfatal-errors -o station *.cpp && ./station
