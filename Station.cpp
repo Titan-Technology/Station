@@ -14,7 +14,6 @@ void build_func();
 void get_info();
 void gen();
 
-
 string GetStdoutFromCommand(string cmd)
 {
 	string data;
@@ -39,6 +38,7 @@ int pos6 = 0;
 int pos7 =0;
 int pos8 = 0;
 int pos;
+string bootstrap[] = {"FASTBUILD=\""};
 string bopt[] = {"BOUTPUTNAME=\"","BINPUTS=\""};
 string flags[] = {"CPPFLAGS=\"","CFLAGS=\"","CCOM=\"","CPPCOM=\"","INSTALLPREFIX=\"","LINKING=\"","INCLUDES=\"","LIBDIR=\"","RES=\""};
 string options[9000];
